@@ -8,12 +8,14 @@ import "@typechain/hardhat";
 import "@nomiclabs/hardhat-etherscan";
 import "solidity-coverage";
 
+import "hardhat-deploy";
+import "@nomiclabs/hardhat-ethers";
+
 interface Etherscan {
   etherscan: { apiKey: string | undefined };
 }
 
 type HardhatUserEtherscanConfig = HardhatUserConfig & Etherscan;
-
 
 const INFURA_API_KEY = process.env.INFURA_API_KEY || "";
 const RINKEBY_PRIVATE_KEY =
@@ -41,6 +43,11 @@ const config: HardhatUserEtherscanConfig = {
     // Your API key for Etherscan
     // Obtain one at https://etherscan.io/
     apiKey: ETHERSCAN_API_KEY,
+  },
+  namedAccounts: {
+    deployer: {
+      default: 0,
+    },
   },
 };
 
