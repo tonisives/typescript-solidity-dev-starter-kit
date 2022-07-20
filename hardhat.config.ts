@@ -10,6 +10,7 @@ import "solidity-coverage";
 
 import "hardhat-deploy";
 import "@nomiclabs/hardhat-ethers";
+import "hardhat-ethernal"
 
 interface Etherscan {
   etherscan: { apiKey: string | undefined };

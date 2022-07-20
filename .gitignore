@@ -7,3 +7,4 @@ coverage*
 .env
 deployments
 typechain-types
+.DS_Store
