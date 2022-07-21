@@ -5,39 +5,25 @@ interface CoinFlip {
 }
 
 contract Counter {
+    event DidFlip(bool side);
+
     uint256 constant FACTOR =
         57896044618658097711785492504343953926634992332820282019728792003956564819968;
-    CoinFlip constant coinFlip =
-        CoinFlip(0x7694B5c6f8B2A1f18182E395DaC97837e1FC6aEF);
+    address private constant coinFlipAddress = 0x5abe79Ecd546D6cC5A90ECC74D0765a6cC9454dB;
+    CoinFlip constant coinFlipContract = CoinFlip(coinFlipAddress);
 
     constructor() public {}
 
-    function flip() public returns(bool) {
+    bool lastFlipValue = false;
+
+    function flip() public returns (bool) {
         uint256 blockValue = uint256(blockhash(block.number - 1));
         uint256 coinFlip = blockValue / FACTOR;
         bool side = coinFlip == 1 ? true : false;
-        // coinFlip.flip(side);
+        // flip the coin in real contract
+        coinFlipContract.flip(side);
+        lastFlipValue = side;
+        emit DidFlip(side);
         return side;
     }
-    /*
-    function guessFlip(bool _guess) public returns (bool) {
-        uint256 blockValue = uint256(blockhash(block.number.sub(1)));
-
-        if (lastHash == blockValue) {
-            revert();
-        }
-
-        lastHash = blockValue;
-        uint256 coinFlip = blockValue.div(FACTOR);
-        bool side = coinFlip == 1 ? true : false;
-
-        if (side == _guess) {
-            consecutiveWins++;
-            return true;
-        } else {
-            consecutiveWins = 0;
-            return false;
-        }
-    }
-    */
 }
