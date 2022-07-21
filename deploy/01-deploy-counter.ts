@@ -1,16 +1,15 @@
-import { DeployFunction } from "hardhat-deploy/types"
+import { DeployFunction, DeployResult } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import "hardhat-ethernal"
 import { Counter } from "../typechain-types"
-import { developmentChains } from "../utils/hardhat-constants"
+import { developmentChains, VERIFICATION_BLOCK_CONFIRMATIONS } from "../utils/hardhat-constants"
 import verify from "../utils/verify"
 
 const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore
   const { deployments, getNamedAccounts, network, ethers } = hre
-  const chainId = network.config.chainId ?? 31337
 
-  if (chainId !== 31337) return
+  const localChain = !developmentChains.includes(network.name)
 
   const { deployer } = await getNamedAccounts()
   const { deploy } = deployments
@@ -21,7 +20,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     from: deployer,
     args: [],
     log: true,
-    waitConfirmations: 1,
+    waitConfirmations: localChain ? 1 : VERIFICATION_BLOCK_CONFIRMATIONS,
   })
 
   if (!developmentChains.includes(network.name)) {
