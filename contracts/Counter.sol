@@ -11,8 +11,8 @@ interface IReentrance {
 
 contract Counter is Ownable {
     IReentrance targetContract =
-        IReentrance(0x0ff55aA8E7732883128DD17B337aB756B936A0F3);
-    uint targetValue = 0.001 ether;
+        IReentrance(0x28be4685eA499D44C84CBF9980020CC0F2c49a0e);
+    uint targetValue = 0.0001 ether;
 
     function balance() public view returns (uint) {
         return address(this).balance;

@@ -21,7 +21,7 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`deployed at ${counter.address}`);
 
   console.log("pwn")
-  const result = await counter.pwn({ value: parseEther("0.001") })
+  const result = await counter.pwn({ value: parseEther("0.0001") })
   console.log("withdraw")
 
   await counter.withdrawAll()
