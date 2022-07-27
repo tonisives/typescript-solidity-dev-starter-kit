@@ -1,9 +1,8 @@
-import { DeployFunction, DeployResult } from "hardhat-deploy/types"
+import { DeployFunction } from "hardhat-deploy/types"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import "hardhat-ethernal"
 import { Counter } from "../typechain-types"
-import { developmentChains, getGasFee, VERIFICATION_BLOCK_CONFIRMATIONS } from "../utils/hardhat-constants"
-import verify from "../utils/verify"
+import { developmentChains, VERIFICATION_BLOCK_CONFIRMATIONS } from "../utils/hardhat-constants"
 import { ContractFactory } from "ethers"
 import { parseEther } from "ethers/lib/utils"
 
@@ -14,32 +13,19 @@ const deploy: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const localChain = developmentChains.includes(network.name)
   const waitConfirmations = localChain ? 1 : VERIFICATION_BLOCK_CONFIRMATIONS
 
-  const fees = await getGasFee()
-
   console.log(`--- deploying Counter`)
 
   const contractFactory: ContractFactory = await ethers.getContractFactory("Counter")
-  // let contractFactory = KnowledgeToken.connect(ledger)
-  let counter = (await contractFactory.deploy({ value: parseEther("0.0011") })) as Counter
+  let counter = (await contractFactory.deploy()) as Counter
   await counter.deployed()
-  // await counter.deployTransaction.wait(waitBlockConfirmations)
+  console.log(`deployed at ${counter.address}`);
 
-  console.log("pwn");
-  await counter.pwn(fees)
+  console.log("pwn")
+  const result = await counter.pwn({ value: parseEther("0.001") })
+  console.log("withdraw")
 
-  /* if (!developmentChains.includes(network.name)) {
-    if (process.env.ETHERSCAN_API_KEY) {
-      console.log("Verifying...")
-      await verify(counter.address, [])
-    }
-  }
-  else {
-    // push to hh-ethernal
-    await hre.ethernal.push({
-      name: 'Counter',
-      address: counter.address
-    })
-  } */
+  await counter.withdrawAll()
+  console.log("withdrawn")
 
   console.log("---")
 }

