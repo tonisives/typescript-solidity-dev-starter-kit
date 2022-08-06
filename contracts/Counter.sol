@@ -1,22 +1,36 @@
-// SPDX-License-Identifier: UNLICENSED
-
+//SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.7;
 
-interface CoinFlip {}
+import "hardhat/console.sol";
 
 contract Counter {
-    address payable private constant coinFlipAddress =
-        payable(0xF01e03f9B622E7a628CAa85495025B1430Ad1Ac6);
-    CoinFlip constant coinFlipContract = CoinFlip(coinFlipAddress);
+    uint256 count = 0;
 
+    event CountedTo(uint256 number);
 
-    constructor() payable {
-
+    function getCount() public view returns (uint256) {
+        return count;
     }
 
-    function pwn() public {
-      // send 0.0011 eth to KING. you are now the owner and King cannot be reset
-      (bool sent, bytes memory data) = coinFlipAddress.call{value: 0.0011 ether}("");
-      require(sent, "failed to transfer eth");
+    function countUp() public returns (uint256) {
+        console.log("countUp: count =", count);
+        uint256 newCount = count + 1;
+        require(newCount > count, "Uint256 overflow");
+
+        count = newCount;
+
+        emit CountedTo(count);
+        return count;
+    }
+
+    function countDown() public returns (uint256) {
+        console.log("countDown: count =", count);
+        uint256 newCount = count - 1;
+        require(newCount < count, "Uint256 underflow");
+
+        count = newCount;
+
+        emit CountedTo(count);
+        return count;
     }
 }
